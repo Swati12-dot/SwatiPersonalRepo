@@ -1,0 +1,16 @@
+{
+  "name": "orangehrm-login-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright login suite for OrangeHRM, exported from ContextQA (TC 30257, 30258)",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:smoke": "playwright test --grep @smoke",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "dotenv": "^16.4.5"
+  }
+}
