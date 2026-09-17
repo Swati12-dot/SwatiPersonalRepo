@@ -1,0 +1,66 @@
+name: Playwright tests
+
+# Runs the OrangeHRM login suite (ContextQA cases 30257, 30258) on every pull
+# request and on pushes to main, plus a nightly run to catch drift in the
+# shared demo instance. workflow_dispatch allows a manual run from the Actions tab.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+# A new push to the same branch cancels the previous run rather than queueing
+# behind it. Never cancels a run on main.
+concurrency:
+  group: playwright-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  test:
+    name: Login suite (chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out the branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        env:
+          BASE_URL: ${{ vars.BASE_URL || 'https://opensource-demo.orangehrmlive.com' }}
+          HR_ADMIN_USERNAME: ${{ secrets.HR_ADMIN_USERNAME }}
+          HR_ADMIN_PASSWORD: ${{ secrets.HR_ADMIN_PASSWORD }}
+          HR_INVALID_PASSWORD: ${{ secrets.HR_INVALID_PASSWORD }}
+        run: npx playwright test
+
+      # Uploaded even when the suite fails — that is exactly when the report,
+      # traces, screenshots and video are worth reading.
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload traces and screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.run_id }}
+          path: test-results/
+          retention-days: 14
