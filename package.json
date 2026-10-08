@@ -2,7 +2,7 @@
   "name": "orangehrm-login-tests",
   "version": "1.0.0",
   "private": true,
-  "description": "Playwright login suite for OrangeHRM, exported from ContextQA (TC 30257, 30258)",
+  "description": "Playwright login suite for OrangeHRM, exported from ContextQA (TC 31979, 31980)",
   "scripts": {
     "test": "playwright test",
     "test:headed": "playwright test --headed",

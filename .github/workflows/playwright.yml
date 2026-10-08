@@ -1,6 +1,6 @@
 name: Playwright tests
 
-# Runs the OrangeHRM login suite (ContextQA cases 30257, 30258) on every pull
+# Runs the OrangeHRM login suite (ContextQA cases 31979, 31980 (plan 1210)) on every pull
 # request and on pushes to main, plus a nightly run to catch drift in the
 # shared demo instance. workflow_dispatch allows a manual run from the Actions tab.
 on:
@@ -30,7 +30,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
